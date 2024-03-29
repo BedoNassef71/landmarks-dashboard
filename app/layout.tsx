@@ -2,8 +2,8 @@ import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Providers from './providers'
-import Link from 'next/link'
 import ThemeSwitcher from './components/ThemeSwitcher'
+import CustomNavbar from '@/app/components/Navbar'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,11 +23,7 @@ export default function RootLayout({
         <Providers>
           <header className='py-6'>
             <nav className='container flex items-center justify-between'>
-              <ul>
-                <li>
-                  <Link href='/'>Home</Link>
-                </li>
-              </ul>
+              <CustomNavbar />
               <ThemeSwitcher />
             </nav>
           </header>
