@@ -1,7 +1,7 @@
-import { CITIES_URL } from '@/app/cities/(utils)/constants'
+import { TAGS_URL } from '@/app/tags/(utils)/constants'
 
-export async function deleteCity(id: string): Promise<any> {
-  const url:string = `${CITIES_URL}/${id}`
+export async function deleteTag(id: string): Promise<any> {
+  const url:string = `${TAGS_URL}/${id}`
   const response: Response = await fetch(url,
     {
       method: 'DELETE',

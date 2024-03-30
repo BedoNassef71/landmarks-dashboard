@@ -1,40 +1,42 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Tabs, Tab, Input, Link, Button, Card, CardBody } from '@nextui-org/react';
+import { Tabs, Tab, Input, Link, Button, Card, CardBody } from '@nextui-org/react'
 import { User, UserResponse } from '@/app/(auth)/(utils)/types/user.type'
 import { isLoggedIn, saveUserInfo } from '@/app/(auth)/(utils)/helpers/auth.helper'
 import { signUpUser } from '@/app/(auth)/(utils)/api/sign-up'
 
 export default function SignUp() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
-  useEffect(()=>{
-    if(isLoggedIn()){
+  useEffect(() => {
+    if (isLoggedIn()) {
       window.location.href = '/'
     }
   }, [])
 
-  const handleEmailChange = (e: { target: { value: React.SetStateAction<string>; }; }) => setEmail(e.target.value);
-  const handlePasswordChange = (e: { target: { value: React.SetStateAction<string>; }; }) => setPassword(e.target.value);
+  const handleEmailChange = (e: { target: { value: React.SetStateAction<string>; }; }) => setEmail(e.target.value)
+  const handlePasswordChange = (e: {
+    target: { value: React.SetStateAction<string>; };
+  }) => setPassword(e.target.value)
 
-  const handleNameChange = (e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value);
+  const handleNameChange = (e: { target: { value: React.SetStateAction<string>; }; }) => setName(e.target.value)
 
   const handleSubmit = async (event: { preventDefault: () => void; }) => {
-    event.preventDefault();
-    const user:User = { email, password, name };
+    event.preventDefault()
+    const user: User = { email, password, name }
     try {
-      const userResponse:UserResponse|null = await signUpUser(user);
+      const userResponse: UserResponse | null = await signUpUser(user)
       if (userResponse) {
-        saveUserInfo(userResponse);
+        saveUserInfo(userResponse)
         window.location.href = '/';
       }
     } catch (error) {
-      console.error('Register failed:', error);
+      console.error('Register failed:', error)
     }
-  };
+  }
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -65,7 +67,7 @@ export default function SignUp() {
                   type="password"
                 />
                 <p className="text-center text-small">
-                  Already have an account?{" "}
+                  Already have an account?{' '}
                   <Link size="sm" href={'/login'}>
                     Login
                   </Link>
@@ -81,5 +83,5 @@ export default function SignUp() {
         </CardBody>
       </Card>
     </div>
-  );
+  )
 }

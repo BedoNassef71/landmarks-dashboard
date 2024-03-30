@@ -12,6 +12,7 @@ export const loginUser = async (user: User):Promise<UserResponse|null> => {
       body: JSON.stringify(user)
     })
 
+
   if (response.ok) {
     return response.json()
   } else {

@@ -1,51 +1,62 @@
-"use client"
-import React, {useState, useEffect} from 'react';
-import {Tabs, Tab, Input, Button, Card, CardBody} from "@nextui-org/react";
-import {PlusIcon} from '@/app/components/PlusIcon';
-import {createCity} from '@/app/cities/(utils)/api/create'
-import {City} from '@/app/cities/(utils)/types/city.type'
-import {useRouter} from 'next/navigation'
+'use client'
+import React, {useEffect, useState} from 'react'
+import {Tabs, Tab, Input, Button, Card, CardBody} from '@nextui-org/react'
+import {EditIcon} from '@nextui-org/shared-icons'
+import {findTagById} from '@/app/tags/(utils)/api/findById'
+import {Tag} from '@/app/tags/(utils)/types/tag.type'
+import {updateTag} from '@/app/tags/(utils)/api/update'
 import {checkIsAdmin} from "@/app/(auth)/(utils)/helpers/auth.helper";
 import UnAuthorized from "@/app/components/UnAuthorized";
 
-export default function CreateCity() {
-    const [name, setName] = useState<string>("");
-    const [errorMessage, setErrorMessage] = useState<string>("");
-    const router = useRouter();
+// @ts-ignore
+export default function EditTag({params}) {
+    const [name, setName] = useState<string>('')
+    const [errorMessage, setErrorMessage] = useState<string>('')
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
     useEffect(() => {
         setIsAdmin(checkIsAdmin())
-    }, []);
+        const fetchData = async () => {
+            try {
+                const tag: Tag = await findTagById(params.id);
+                setName(tag.name);
+            } catch (error) {
+                console.error('Error fetching tag data:', error);
+            }
+        };
+
+        fetchData();
+    }, [params.id]);
+
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
-    };
+        setName(event.target.value)
+    }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const city: City | null = await createCity(name);
-        if (city) {
-            router.push('/cities')
+        const tag: Tag | null = await updateTag(params.id, name);
+        if (tag) {
+            // TODO: improve this
+            window.location.href = '/tags';
         } else {
-            setErrorMessage("City name is already exists");
+            setErrorMessage("Tag name is already exists");
         }
-    };
+    }
 
     return (
-
         <div className="flex justify-center items-center h-screen">
             {
                 !isAdmin ? <UnAuthorized/> :
                     <Card className="max-w-full w-[340px] h-[200px]">
                         <CardBody className="overflow-hidden">
                             <Tabs fullWidth size="md" aria-label="Tabs form">
-                                <Tab key="city" title="Create new City">
+                                <Tab key="tag" title="Edit Tag">
                                     <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                                         <Input
                                             isRequired
                                             label="Name"
-                                            placeholder="Enter city name"
+                                            placeholder="Enter tag name"
                                             value={name}
                                             onChange={handleNameChange}
                                             type="text"
@@ -53,7 +64,7 @@ export default function CreateCity() {
                                         />
                                         <div className="flex gap-2 justify-end">
                                             <Button fullWidth color="primary" type="submit">
-                                                Create <PlusIcon width={undefined} height={undefined}/>
+                                                Update <EditIcon/>
                                             </Button>
                                         </div>
                                     </form>
@@ -63,6 +74,5 @@ export default function CreateCity() {
                     </Card>
             }
         </div>
-    );
+    )
 }
-

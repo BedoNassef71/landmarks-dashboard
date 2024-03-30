@@ -7,7 +7,7 @@ export async function updateCity(id: string, name: string) {
   const response: Response = await fetch(`${CITIES_URL}/${id}`,
     {
       method: 'PATCH',
-      headers: requestHeaders,
+      headers: requestHeaders(),
       body: JSON.stringify(city)
     })
   if (response.ok) {

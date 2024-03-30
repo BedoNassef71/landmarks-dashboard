@@ -1,31 +1,39 @@
-import { UserResponse } from '@/app/(auth)/(utils)/types/user.type';
+import { User, UserResponse } from '@/app/(auth)/(utils)/types/user.type'
 
 export const saveUserInfo = (userResponse: UserResponse) => {
-  localStorage.setItem('user', JSON.stringify(userResponse));
-};
+  localStorage.setItem('user', JSON.stringify(userResponse.user))
+  console.log(userResponse.access_token)
+  localStorage.setItem('access_token', userResponse.access_token)
+}
 
 export const isLoggedIn = () => {
-  const user: string | null = localStorage.getItem('user');
-  return !!user;
-};
+  return !!localStorage.getItem('user')
+}
 
 export const logout = (): void => {
-  localStorage.removeItem('user');
-};
+  localStorage.removeItem('user')
+  localStorage.removeItem('access_token')
+}
 
-export const getUsername = (): string => {
-  const localUser: string = localStorage.getItem('user') || '';
-  const userResponse: UserResponse = JSON.parse(localUser);
-  return userResponse.user.name || '';
-};
+export const getUsername = (): string | undefined => {
+  const localUser: string = localStorage.getItem('user') || ''
+  const user: User = JSON.parse(localUser)
+  return user.name
+}
 
+export const checkIsAdmin = (): boolean => {
+  const localUser: string = localStorage.getItem('user') || ''
+  const user: User = JSON.parse(localUser)
+  console.log(user)
+  return user.isAdmin || false;
+}
 export const getAccessToken = (): string => {
-  const localUser: string = localStorage.getItem('user') || '';
-  const userResponse: UserResponse = localUser ? JSON.parse(localUser) : {};
-  return userResponse.access_token || '';
-};
+  return localStorage.getItem('access_token') || ''
+}
 
-export const requestHeaders: any = {
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${getAccessToken()}`
-};
+export const requestHeaders = (): any => {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${getAccessToken()}`
+  }
+}
