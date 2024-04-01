@@ -1,19 +1,14 @@
 import { CITIES_URL } from '@/app/cities/(utils)/constants'
 import { City } from '@/app/cities/(utils)/types/city.type'
-import { getAccessToken } from '@/app/(auth)/(utils)/helpers/auth.helper'
+import { requestHeaders } from '@/app/(auth)/(utils)/helpers/auth.helper'
 
 export async function createCity(name: string): Promise<City | null> {
   try {
     const cityData: City = { name }
 
-    const token: string = getAccessToken()
-
     const response = await fetch(CITIES_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: requestHeaders(),
       body: JSON.stringify(cityData)
     })
 

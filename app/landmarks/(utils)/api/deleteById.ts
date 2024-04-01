@@ -1,8 +1,9 @@
-import { CITIES_URL } from '@/app/cities/(utils)/constants'
+import { LANDMARKS_URL } from '@/app/landmarks/(utils)/constants'
 import { requestHeaders } from '@/app/(auth)/(utils)/helpers/auth.helper'
 
-export async function deleteCity(id: string): Promise<any> {
-  const url:string = `${CITIES_URL}/${id}`
+export async function deleteLandmark(id: string): Promise<any> {
+  const url:string = `${LANDMARKS_URL}/${id}`
+
   const response: Response = await fetch(url,
     {
       method: 'DELETE',

@@ -1,6 +1,6 @@
 import { TAGS_URL } from '@/app/tags/(utils)/constants'
 import { Tag } from '@/app/tags/(utils)/types/tag.type'
-import { getAccessToken } from '@/app/(auth)/(utils)/helpers/auth.helper'
+import { getAccessToken, requestHeaders } from '@/app/(auth)/(utils)/helpers/auth.helper'
 
 export async function createTag(name: string): Promise<Tag | null> {
   try {
@@ -10,10 +10,7 @@ export async function createTag(name: string): Promise<Tag | null> {
 
     const response = await fetch(TAGS_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
+      headers: requestHeaders(),
       body: JSON.stringify(tagData)
     })
 

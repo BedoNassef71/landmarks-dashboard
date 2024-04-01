@@ -9,11 +9,12 @@ import { checkIsAdmin } from '@/app/(auth)/(utils)/helpers/auth.helper'
 import UnAuthorized from '@/app/components/UnAuthorized'
 import { Textarea } from '@nextui-org/input'
 import { Landmark } from '@/app/landmarks/(utils)/types/landmark.type'
-import { createLandmark } from '@/app/landmarks/(utils)/api/create'
+import { updateLandmark } from '@/app/landmarks/(utils)/api/update'
 import { findAllCities } from '@/app/cities/(utils)/api/findAll'
 import { findAllTags } from '@/app/tags/(utils)/api/findAll'
+import { findLandmarkById } from '@/app/landmarks/(utils)/api/findById'
 
-export default function CreateLandmark() {
+export default function EditLandmark({ params }) {
   const [name, setName] = useState<string>('')
   const [description, setDescription] = useState<string>('')
   const [era, setEra] = useState<string>('')
@@ -24,9 +25,6 @@ export default function CreateLandmark() {
   const [isRecommended, setIsRecommended] = useState<boolean>(false)
   const [city, setCity] = useState<string>('')
   const [tags, setTags] = useState<string[]>([])
-  const [location, setLocation] = useState<string>('')
-  const [longitude, setLongitude] = useState<number>(0)
-  const [latitude, setLatitude] = useState<number>(0)
   const [images, setImages] = useState<string[]>([])
   const [errorMessage, setErrorMessage] = useState<string>('')
   const router = useRouter()
@@ -38,12 +36,25 @@ export default function CreateLandmark() {
     setIsAdmin(checkIsAdmin())
     const fetchData = async () => {
       const cities: City[] = await findAllCities()
-      const tags = await findAllTags()
+      const tags: Tag[] = await findAllTags()
+      const landmark: Landmark = await findLandmarkById(params.id)
+      setCity(landmark.city?._id || '')
+      setDbTags(landmark.tags || [])
+      setImages(landmark.images || [])
+      setName(landmark.name)
+      setDescription(landmark.description || '')
+      setCoverImage(landmark.cover_image || '')
+      setEra(landmark.era || '')
+      setFamousFigures(landmark.famous_figures || '')
+      setPrice(landmark.price || 0)
+      setOpeningHours(landmark.opening_hours || '')
+      setIsRecommended(landmark.is_recommended || false)
+
       setCities(cities)
       setDbTags(tags)
     }
     fetchData()
-  }, [])
+  }, [params.id])
 
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,10 +77,6 @@ export default function CreateLandmark() {
     setDescription(event.target.value)
   }
 
-  const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLocation(event.target.value)
-  }
-
   const handleIsRecommendedChange = () => {
     setIsRecommended(!isRecommended)
   }
@@ -90,17 +97,11 @@ export default function CreateLandmark() {
     setImages(newImages)
   }
 
-  const handleLatitudeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLatitude(Number(event.target.value))
-  }
 
   const handleOpeningHoursChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOpeningHours(event.target.value)
   }
 
-  const handleLongitudeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLongitude(Number(event.target.value))
-  }
 
 
   const addImage = () => {
@@ -117,7 +118,7 @@ export default function CreateLandmark() {
     event.preventDefault()
     const new_tags: Tag[] = tags
       .filter(tag => tag.length > 2) // Filter out tags that are empty or contain only one character
-      .map(tag => ({ _id: tag })); // Map the remaining tags to the desired object structure
+      .map(tag => ({ _id: tag })) // Map the remaining tags to the desired object structure
 
 
     const landmark: Landmark = {
@@ -129,22 +130,17 @@ export default function CreateLandmark() {
       city: { _id: city },
       tags: new_tags,
       images,
-      location: {
-        name: location,
-        latitude,
-        longitude
-      },
       price,
       cover_image: coverImage,
       opening_hours: openingHours
     }
 
     if (landmark) {
-      const createdLandmark: Landmark | null = await createLandmark(landmark)
-      console.log(createdLandmark)
+      const updatedLandmark: Landmark | null = await updateLandmark(params.id, landmark)
+      console.log(updatedLandmark)
       router.push('/landmarks')
     } else {
-      setErrorMessage('City name is already exists')
+      setErrorMessage('Landmark name is already exists')
     }
   }
 
@@ -156,12 +152,13 @@ export default function CreateLandmark() {
         <Card className="max-w-full w-[600px] h-[1000px]">
           <CardBody className="overflow-hidden">
             <Tabs fullWidth size="md" aria-label="Tabs form">
-              <Tab key="Landmark" title="Create new Landmark or Monment">
+              <Tab key="Landmark" title="Update new Landmark or Monment">
                 <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                   <Input hidden />
                   <Input hidden />
                   <Input
                     isRequired
+                    value={name}
                     label="Name"
                     placeholder="Enter city name"
                     onChange={handleNameChange}
@@ -169,6 +166,7 @@ export default function CreateLandmark() {
                   />
                   <Textarea
                     isRequired
+                    value={description}
                     label="Description"
                     labelPlacement="outside"
                     placeholder="Enter your description"
@@ -176,6 +174,7 @@ export default function CreateLandmark() {
                   />
                   <Input
                     isRequired
+                    value={era}
                     label="Era"
                     placeholder="Enter era name"
                     onChange={handleEraChange}
@@ -183,6 +182,7 @@ export default function CreateLandmark() {
                   />
                   <Input
                     isRequired
+                    value={famousFigures}
                     label="Famous Figures"
                     placeholder="Enter Famous Figures"
                     onChange={handleFamousFiguresChange}
@@ -191,6 +191,7 @@ export default function CreateLandmark() {
                   />
                   <Input
                     isRequired
+                    value={coverImage}
                     label="Cover Image"
                     placeholder="Enter cover Image URL"
                     onChange={handleCoverImageChange}
@@ -198,6 +199,7 @@ export default function CreateLandmark() {
                   />
                   <Input
                     isRequired
+                    value={openingHours}
                     label="Opening Hours"
                     placeholder="Enter opening Hours"
                     onChange={handleOpeningHoursChange}
@@ -205,6 +207,7 @@ export default function CreateLandmark() {
                   />
                   <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
                     <Input
+                      value={price}
                       isRequired
                       label="Price"
                       placeholder="Enter Price"
@@ -242,29 +245,6 @@ export default function CreateLandmark() {
                       ))}
                     </Select>
                   </div>
-                  <Input
-                    isRequired
-                    label="Location"
-                    placeholder="Enter location"
-                    onChange={handleLocationChange}
-                    type="text"
-                  />
-                  <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-                    <Input
-                      isRequired
-                      label="latitude"
-                      placeholder="Enter latitude"
-                      onChange={handleLatitudeChange}
-                      type="number"
-                    />
-                    <Input
-                      isRequired
-                      label="longitude"
-                      placeholder="Enter longitude"
-                      onChange={handleLongitudeChange}
-                      type="number"
-                    />
-                  </div>
                   {images.map((image, index) => (
                     <div key={index}>
                       <Input
@@ -282,7 +262,7 @@ export default function CreateLandmark() {
                   <button onClick={addImage}>Add Image</button>
                   <div className="flex gap-2 justify-end">
                     <Button fullWidth color="primary" type="submit">
-                      Create <PlusIcon width={undefined} height={undefined} />
+                      Update <PlusIcon width={undefined} height={undefined} />
                     </Button>
                   </div>
                 </form>
